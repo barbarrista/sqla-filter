@@ -11,7 +11,7 @@ license = {text = "MIT"}
 name = "sqla-filter"
 readme = "README.md"
 requires-python = ">=3.11"
-version = "0.1.1"
+version = "0.1.2"
 
 [project.urls]
 "Repository" = "https://gitlab.com/n.one.k/opensource/sqlalchemy-filter"
@@ -166,7 +166,7 @@ ignore-names = ["_t"] # SQLAlchemy result field, not actually private
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.1.1"
+version = "0.1.2"
 version_files = [
   "sqla_filter/__init__.py",
   "pyproject.toml:version",
