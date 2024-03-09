@@ -5,7 +5,7 @@ from uuid import UUID
 
 from sqlalchemy.sql.operators import eq, ge, icontains_op, in_op, le
 
-from sqlalchemy_filter import UNSET, BaseFilter, FilterField, RelationshipInfo, Unset
+from sqla_filter import UNSET, BaseFilter, FilterField, RelationshipInfo, Unset
 
 from .models import Author, Book, Review
 

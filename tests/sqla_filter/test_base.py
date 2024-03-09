@@ -3,8 +3,8 @@ from uuid import UUID
 
 from sqlalchemy.sql.operators import eq
 
-from sqlalchemy_filter import UNSET, BaseFilter, FilterField, Unset
-from tests.sqlalchemy_filter.common.models import Book
+from sqla_filter import UNSET, BaseFilter, FilterField, Unset
+from tests.sqla_filter.common.models import Book
 
 
 def test_base_filter() -> None:

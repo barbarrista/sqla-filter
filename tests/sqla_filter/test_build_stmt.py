@@ -2,8 +2,8 @@ import uuid
 
 from sqlalchemy import select
 
-from tests.sqlalchemy_filter.common.filter import BookFilter
-from tests.sqlalchemy_filter.common.models import Author, Book, Review
+from tests.sqla_filter.common.filter import BookFilter
+from tests.sqla_filter.common.models import Author, Book, Review
 from tests.utils import compile_stmt
 
 

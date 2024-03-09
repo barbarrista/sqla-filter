@@ -7,9 +7,7 @@ from sqlalchemy.orm import InstrumentedAttribute
 from sqlalchemy.sql.operators import OperatorType
 from sqlalchemy.sql.roles import OnClauseRole
 
-_OnClauseArgument: TypeAlias = (  # noqa: UP040
-    ColumnExpressionArgument[Any] | OnClauseRole
-)
+_OnClauseArgument: TypeAlias = ColumnExpressionArgument[Any] | OnClauseRole
 
 
 class Unset(enum.Enum):

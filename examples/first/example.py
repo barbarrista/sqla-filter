@@ -8,8 +8,8 @@ from sqlalchemy import Select, select
 from sqlalchemy.sql.operators import eq, ge, icontains_op, in_op, le
 
 from examples.models import Author, Book, Review
-from sqlalchemy_filter.base import BaseFilter
-from sqlalchemy_filter.filter_ import (
+from sqla_filter.base import BaseFilter
+from sqla_filter.filter_ import (
     UNSET,
     FilterField,
     RelationshipInfo,
