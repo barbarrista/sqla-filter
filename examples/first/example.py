@@ -28,7 +28,7 @@ class BookFilter(BaseFilter):
         FilterField(Book.created_at, operator=le),
     ] = UNSET
 
-    user_ids: Annotated[
+    author_ids: Annotated[
         Sequence[UUID] | Unset,
         FilterField(
             Author.id,
@@ -40,14 +40,6 @@ class BookFilter(BaseFilter):
         list[UUID] | Unset,
         FilterField(
             Review.id,
-            operator=in_op,
-            relationship=RelationshipInfo(field=Book.reviews),
-        ),
-    ] = UNSET
-    review_name: Annotated[
-        list[str] | Unset,
-        FilterField(
-            Review.content,
             operator=in_op,
             relationship=RelationshipInfo(field=Book.reviews),
         ),
