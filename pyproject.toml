@@ -11,7 +11,7 @@ license = {text = "MIT"}
 name = "sqla-filter"
 readme = "README.md"
 requires-python = ">=3.11"
-version = "0.1.0"
+version = "0.1.1"
 
 [project.urls]
 "Repository" = "https://gitlab.com/n.one.k/opensource/sqlalchemy-filter"
@@ -163,6 +163,14 @@ ignore-names = ["_t"] # SQLAlchemy result field, not actually private
 
 [tool.ruff.lint.flake8-tidy-imports.banned-api]
 "redis.asyncio.Redis".msg = "Use connectors.types.RedisClient instead."
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "0.1.1"
+version_files = [
+  "sqla_filter/__init__.py",
+  "pyproject.toml:version",
+]
 
 [tool.pdm.scripts]
 lint = {composite = [
