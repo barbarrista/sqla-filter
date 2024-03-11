@@ -14,7 +14,8 @@ requires-python = ">=3.11"
 version = "0.1.2"
 
 [project.urls]
-"Repository" = "https://gitlab.com/n.one.k/opensource/sqlalchemy-filter"
+"GitLab" = "https://gitlab.com/n.one.k/opensource/sqla-filter"
+"GitHub" = "https://github.com/barbarrista/sqla-filter"
 
 [build-system]
 build-backend = "pdm.backend"
