@@ -48,6 +48,9 @@ class BaseFilter:
             if filter_.relationship:
                 stmt = _apply_join(stmt, relationship=filter_.relationship)
 
+            if filter_.on_apply:
+                stmt = filter_.on_apply(stmt, value=value)
+
             stmt = stmt.where(filter_.operator(filter_.field, value))
 
         return stmt

@@ -34,6 +34,7 @@ class BookFilter(BaseFilter):
             Author.id,
             operator=in_op,
             relationship=RelationshipInfo(field=Book.authors),
+            on_apply=lambda stmt, value: stmt.where(Author.id.is_not(None)),
         ),
     ] = UNSET
     review_ids: Annotated[
@@ -61,6 +62,7 @@ def main() -> None:
     now = datetime.now(tz=UTC)
     filter_ = BookFilter(
         ident=uuid.uuid4(),
+        author_ids=[uuid.uuid4()],
         review_content_contains="Review Content",
         created_at_from=now,
         created_at_to=now + timedelta(days=1),
