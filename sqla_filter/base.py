@@ -1,4 +1,3 @@
-import contextlib
 import dataclasses
 from collections.abc import Mapping
 from typing import (
@@ -11,11 +10,10 @@ from typing import (
 )
 
 from sqlalchemy import Select
-from sqlalchemy.orm import DeclarativeBase
 
 from .filter_ import FilterField, RelationshipInfo, Unset
 
-_TModel = TypeVar("_TModel", bound=DeclarativeBase)
+_SelectClause = TypeVar("_SelectClause", bound=tuple[Any, ...])
 
 
 @dataclass_transform(kw_only_default=True)
@@ -39,12 +37,11 @@ class BaseFilter:
 
         wrapped_cls.__sqla_filter_fields__ = filter_fields
 
-    def apply(self, stmt: Select[tuple[_TModel]]) -> Select[tuple[_TModel]]:
-        for field in dataclasses.fields(self):  # type:ignore[arg-type] # mypy moment
-            if (value := getattr(self, field.name)) is Unset.v:
+    def apply(self, stmt: Select[_SelectClause]) -> Select[_SelectClause]:
+        for field_name, filter_ in self.__sqla_filter_fields__.items():
+            value = getattr(self, field_name)
+            if value is Unset.v:
                 continue
-
-            filter_ = self.__sqla_filter_fields__[field.name]
             if filter_.relationship:
                 stmt = _apply_join(stmt, relationship=filter_.relationship)
 
@@ -59,20 +56,18 @@ class BaseFilter:
 def _get_filter_field(
     annotations: tuple[Any, ...],
 ) -> FilterField | None:
-    with contextlib.suppress(IndexError):
-        if not isinstance((filter_ := annotations[1]), FilterField):
-            return None
-
-        return filter_
+    for annotation in annotations:
+        if isinstance(annotation, FilterField):
+            return annotation
 
     return None
 
 
 def _apply_join(
-    stmt: Select[tuple[_TModel]],
+    stmt: Select[_SelectClause],
     *,
     relationship: RelationshipInfo,
-) -> Select[tuple[_TModel]]:
+) -> Select[_SelectClause]:
     return stmt.join(
         relationship.field,
         relationship.onclause,

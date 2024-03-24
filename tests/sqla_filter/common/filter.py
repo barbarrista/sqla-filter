@@ -46,3 +46,4 @@ class BookFilter(BaseFilter):
             relationship=RelationshipInfo(field=Book.reviews),
         ),
     ] = UNSET
+    process_manually_field: str | Unset = UNSET
