@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Annotated
 from uuid import UUID
@@ -8,6 +9,12 @@ from sqlalchemy.sql.operators import eq, ge, icontains_op, in_op, le
 from sqla_filter import UNSET, BaseFilter, FilterField, RelationshipInfo, Unset
 
 from .models import Author, Book, Review
+
+
+@dataclass(frozen=True, slots=True)
+class DateTimeInterval:
+    from_: datetime
+    to: datetime
 
 
 class BookFilter(BaseFilter):
@@ -20,6 +27,14 @@ class BookFilter(BaseFilter):
     created_at_to: Annotated[
         datetime | Unset,
         FilterField(Book.created_at, operator=le),
+    ] = UNSET
+
+    created_at_between: Annotated[
+        DateTimeInterval | Unset,
+        FilterField(
+            Book.created_at,
+            operator=lambda field, value: field.between(value.from_, value.to),
+        ),
     ] = UNSET
 
     author_ids: Annotated[

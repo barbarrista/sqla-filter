@@ -40,12 +40,18 @@ class BaseFilter:
     def apply(self, stmt: Select[_SelectClause]) -> Select[_SelectClause]:
         for field_name, filter_ in self.__sqla_filter_fields__.items():
             value = getattr(self, field_name)
+
             if value is Unset.v:
                 continue
             if filter_.relationship:
                 stmt = _apply_join(stmt, relationship=filter_.relationship)
 
-            stmt = stmt.where(filter_.operator(filter_.field, value))
+            stmt = stmt.where(
+                filter_.operator(
+                    filter_.field,
+                    value,
+                ),  # pyright:ignore[reportArgumentType]
+            )
 
         return stmt
 

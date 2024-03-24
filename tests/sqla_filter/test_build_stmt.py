@@ -1,8 +1,9 @@
 import uuid
+from datetime import UTC, datetime, timedelta
 
 from sqlalchemy import select
 
-from tests.sqla_filter.common.filter import BookFilter
+from tests.sqla_filter.common.filter import BookFilter, DateTimeInterval
 from tests.sqla_filter.common.models import Author, Book, Review
 from tests.utils import compile_stmt
 
@@ -15,6 +16,22 @@ def test_build_simple_stmt() -> None:
     stmt = filter_.apply(stmt)
 
     expected_stmt = select(Book).where(Book.id == ident)
+
+    compiled_stmt = compile_stmt(stmt)
+    compiled_expected_stmt = compile_stmt(expected_stmt)
+
+    assert compiled_stmt.string == compiled_expected_stmt.string
+
+
+def test_build_stmt_with_lambda() -> None:
+    now = datetime.now(tz=UTC)
+    tomorrow = now + timedelta(days=1)
+
+    stmt = select(Book)
+    filter_ = BookFilter(created_at_between=DateTimeInterval(from_=now, to=tomorrow))
+    stmt = filter_.apply(stmt)
+
+    expected_stmt = select(Book).where(Book.created_at.between(now, tomorrow))
 
     compiled_stmt = compile_stmt(stmt)
     compiled_expected_stmt = compile_stmt(expected_stmt)

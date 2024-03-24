@@ -27,6 +27,10 @@ class BookFilter(BaseFilter):
         datetime | Unset,
         FilterField(Book.created_at, operator=le),
     ] = UNSET
+    something: Annotated[
+        datetime | Unset,
+        FilterField(Book.created_at, operator=lambda field, value: field.in_(value)),
+    ] = UNSET
 
     author_ids: Annotated[
         Sequence[UUID] | Unset,
@@ -61,6 +65,7 @@ def main() -> None:
     now = datetime.now(tz=UTC)
     filter_ = BookFilter(
         ident=uuid.uuid4(),
+        author_ids=[uuid.uuid4()],
         review_content_contains="Review Content",
         created_at_from=now,
         created_at_to=now + timedelta(days=1),
