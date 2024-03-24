@@ -27,6 +27,10 @@ class BookFilter(BaseFilter):
         datetime | Unset,
         FilterField(Book.created_at, operator=le),
     ] = UNSET
+    something: Annotated[
+        datetime | Unset,
+        FilterField(Book.created_at, operator=lambda field, value: field.in_(value)),
+    ] = UNSET
 
     author_ids: Annotated[
         Sequence[UUID] | Unset,
@@ -34,7 +38,6 @@ class BookFilter(BaseFilter):
             Author.id,
             operator=in_op,
             relationship=RelationshipInfo(field=Book.authors),
-            on_apply=lambda stmt, value: stmt.where(Author.id.is_not(None)),
         ),
     ] = UNSET
     review_ids: Annotated[

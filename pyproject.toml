@@ -30,14 +30,15 @@ dev = [
   "commitizen>=3.18.0",
 ]
 lint = [
-  "black>=24.2.0",
-  "bump-pydantic>=0.8.0",
-  "deptry>=0.12.0",
-  "isort>=5.13.2",
-  "mypy>=1.9.0",
-  "radon>=6.0.1",
-  "ruff>=0.3.2",
-  "bump>=1.3.2",
+    "black>=24.2.0",
+    "bump-pydantic>=0.8.0",
+    "deptry>=0.12.0",
+    "isort>=5.13.2",
+    "mypy>=1.9.0",
+    "radon>=6.0.1",
+    "ruff>=0.3.2",
+    "bump>=1.3.2",
+    "pyright>=1.1.355",
 ]
 tests = [
   "coverage>=7.4.0",
@@ -162,8 +163,12 @@ staticmethod-decorators = ["staticmethod"]
 [tool.ruff.lint.flake8-self]
 ignore-names = ["_t"] # SQLAlchemy result field, not actually private
 
-[tool.ruff.lint.flake8-tidy-imports.banned-api]
-"redis.asyncio.Redis".msg = "Use connectors.types.RedisClient instead."
+
+[tool.pyright]
+typeCheckingMode = "strict"
+reportUnusedImport = false
+reportMissingTypeStubs = false
+reportUnknownMemberType = false
 
 [tool.commitizen]
 name = "cz_conventional_commits"
@@ -179,6 +184,7 @@ lint = {composite = [
   "black .",
   "ruff check . --fix --show-fixes",
   "mypy .",
+  "pyright .",
   "deptry ./sqla_filter",
 ]}
 

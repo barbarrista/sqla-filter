@@ -1,13 +1,21 @@
 import dataclasses
 import enum
-from typing import Any, Protocol, TypeAlias, TypeVar
+from typing import Any, Protocol, TypeAlias
 
-from sqlalchemy import ColumnExpressionArgument, Select
-from sqlalchemy.orm import DeclarativeBase, InstrumentedAttribute
+from sqlalchemy import ColumnElement, ColumnExpressionArgument
+from sqlalchemy.orm import InstrumentedAttribute
 from sqlalchemy.sql.operators import OperatorType
 from sqlalchemy.sql.roles import OnClauseRole
 
 _OnClauseArgument: TypeAlias = ColumnExpressionArgument[Any] | OnClauseRole
+
+
+class OperatorProtocol(Protocol):  # pragma: no cover
+    def __call__(
+        self,
+        field: InstrumentedAttribute[Any],
+        value: Any,  # noqa: ANN401
+    ) -> ColumnElement[bool]: ...
 
 
 class Unset(enum.Enum):
@@ -15,12 +23,6 @@ class Unset(enum.Enum):
 
 
 UNSET = Unset.v
-
-_T = TypeVar("_T", bound=DeclarativeBase)
-
-
-class OnApplyHandler(Protocol):
-    def __call__(self, stmt: Select[tuple[_T]], *, value: Any) -> Select[tuple[_T]]: ...
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
@@ -36,6 +38,5 @@ class RelationshipInfo:
 class FilterField:
     field: InstrumentedAttribute[Any]
     _: dataclasses.KW_ONLY
-    operator: OperatorType
+    operator: OperatorType | OperatorProtocol
     relationship: RelationshipInfo | None = None
-    on_apply: OnApplyHandler | None = None
