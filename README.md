@@ -130,6 +130,17 @@ class BookFilter(BaseFilter):
             relationship=RelationshipInfo(field=Book.reviews),
         ),
     ] = UNSET
+    author_user_id: Annotated[
+        UUID | Unset,
+        FilterField(
+            User.id,
+            operator=eq,
+            relationships=[
+                RelationshipInfo(field=Book.authors),
+                RelationshipInfo(field=Author.user),
+            ],
+        ),
+    ] = UNSET
 
 
 # core/domain/book/repository.py

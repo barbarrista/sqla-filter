@@ -43,8 +43,12 @@ class BaseFilter:
 
             if value is Unset.v:
                 continue
+
             if filter_.relationship:
                 stmt = _apply_join(stmt, relationship=filter_.relationship)
+
+            for relationship in filter_.relationships or ():
+                stmt = _apply_join(stmt, relationship=relationship)
 
             stmt = stmt.where(
                 filter_.operator(

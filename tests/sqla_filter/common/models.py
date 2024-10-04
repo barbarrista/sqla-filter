@@ -38,6 +38,8 @@ class Author(Base):
     __tablename__ = "author"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
+    user: Mapped[User] = relationship()
 
 
 class BookAuthor(Base):
