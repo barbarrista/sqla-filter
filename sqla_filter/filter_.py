@@ -1,5 +1,6 @@
 import dataclasses
 import enum
+from collections.abc import Sequence
 from typing import Any, Protocol, TypeAlias
 
 from sqlalchemy import ColumnElement, ColumnExpressionArgument
@@ -40,3 +41,7 @@ class FilterField:
     _: dataclasses.KW_ONLY
     operator: OperatorType | OperatorProtocol
     relationship: RelationshipInfo | None = None
+    """For filter by relationship field"""
+
+    relationships: Sequence[RelationshipInfo] | None = None
+    """For filter by nested relationship field"""

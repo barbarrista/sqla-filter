@@ -8,7 +8,7 @@ from sqlalchemy.sql.operators import eq, ge, icontains_op, in_op, le
 
 from sqla_filter import UNSET, BaseFilter, FilterField, RelationshipInfo, Unset
 
-from .models import Author, Book, Review
+from .models import Author, Book, Review, User
 
 
 @dataclass(frozen=True, slots=True)
@@ -43,6 +43,17 @@ class BookFilter(BaseFilter):
             Author.id,
             operator=in_op,
             relationship=RelationshipInfo(field=Book.authors),
+        ),
+    ] = UNSET
+    author_user_id: Annotated[
+        UUID | Unset,
+        FilterField(
+            User.id,
+            operator=eq,
+            relationships=[
+                RelationshipInfo(field=Book.authors),
+                RelationshipInfo(field=Author.user),
+            ],
         ),
     ] = UNSET
     review_ids: Annotated[

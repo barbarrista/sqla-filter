@@ -7,7 +7,7 @@ from uuid import UUID
 from sqlalchemy import Select, select
 from sqlalchemy.sql.operators import eq, ge, icontains_op, in_op, le
 
-from examples.models import Author, Book, Review
+from examples.models import Author, Book, Review, User
 from sqla_filter.base import BaseFilter
 from sqla_filter.filter_ import (
     UNSET,
@@ -30,6 +30,17 @@ class BookFilter(BaseFilter):
     something: Annotated[
         datetime | Unset,
         FilterField(Book.created_at, operator=lambda field, value: field.in_(value)),
+    ] = UNSET
+    author_user_id: Annotated[
+        UUID | Unset,
+        FilterField(
+            User.id,
+            operator=eq,
+            relationships=[
+                RelationshipInfo(field=Book.authors),
+                RelationshipInfo(field=Author.user),
+            ],
+        ),
     ] = UNSET
 
     author_ids: Annotated[

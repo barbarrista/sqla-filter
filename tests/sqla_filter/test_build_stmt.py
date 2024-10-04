@@ -4,7 +4,7 @@ from datetime import UTC, datetime, timedelta
 from sqlalchemy import select
 
 from tests.sqla_filter.common.filter import BookFilter, DateTimeInterval
-from tests.sqla_filter.common.models import Author, Book, Review
+from tests.sqla_filter.common.models import Author, Book, Review, User
 from tests.utils import compile_stmt
 
 
@@ -57,6 +57,23 @@ def test_build_stmt_with_join() -> None:
         )
         .join(Book.authors)
         .join(Book.reviews)
+    )
+
+    compiled_stmt = compile_stmt(stmt)
+    compiled_expected_stmt = compile_stmt(expected_stmt)
+
+    assert compiled_stmt.string == compiled_expected_stmt.string
+
+
+def test_build_stmt_with_multiple_join() -> None:
+    user_id = uuid.uuid4()
+
+    stmt = select(Book)
+    filter_ = BookFilter(author_user_id=user_id)
+    stmt = filter_.apply(stmt)
+
+    expected_stmt = (
+        select(Book).where(User.id == user_id).join(Book.authors).join(Author.user)
     )
 
     compiled_stmt = compile_stmt(stmt)
