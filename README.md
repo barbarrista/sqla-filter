@@ -256,8 +256,9 @@ if __name__ == "__main__":
     main()
 
 ```
+
 Important note: Only pass fields of a class that extends the BaseSorter class to `build_priorities`.
 
 If the field is set to "NOT_SET", the filter will not be applied.
 
-[All examples are available at the following link](https://gitlab.com/n.one.k/opensource/sqlalchemy-filter/-/blob/main/examples)
+[All examples are available at the following link](https://gitlab.com/n.one.k/opensource/sqla-filter/-/blob/main/examples)
