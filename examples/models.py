@@ -23,6 +23,9 @@ class User(Base):
     __tablename__ = "user"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    first_name: Mapped[str]
+    last_name: Mapped[str]
+    is_deleted: Mapped[bool]
 
 
 class Review(Base):

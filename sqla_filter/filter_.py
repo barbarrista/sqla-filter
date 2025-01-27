@@ -1,14 +1,12 @@
 import dataclasses
-import enum
 from collections.abc import Sequence
-from typing import Any, Protocol, TypeAlias
+from typing import Any, Protocol
 
-from sqlalchemy import ColumnElement, ColumnExpressionArgument
+from sqlalchemy import ColumnElement
 from sqlalchemy.orm import InstrumentedAttribute
 from sqlalchemy.sql.operators import OperatorType
-from sqlalchemy.sql.roles import OnClauseRole
 
-_OnClauseArgument: TypeAlias = ColumnExpressionArgument[Any] | OnClauseRole
+from .relationship import RelationshipInfo
 
 
 class OperatorProtocol(Protocol):  # pragma: no cover
@@ -19,24 +17,10 @@ class OperatorProtocol(Protocol):  # pragma: no cover
     ) -> ColumnElement[bool]: ...
 
 
-class Unset(enum.Enum):
-    v = enum.auto()
-
-
-UNSET = Unset.v
-
-
-@dataclasses.dataclass(frozen=True, slots=True)
-class RelationshipInfo:
-    field: InstrumentedAttribute[Any]
-    _: dataclasses.KW_ONLY
-    onclause: _OnClauseArgument | None = None
-    isouter: bool = False
-    full: bool = False
-
-
-@dataclasses.dataclass(frozen=True, slots=True)
+@dataclasses.dataclass(slots=True)
 class FilterField:
+    _name: str = dataclasses.field(init=False, repr=False, hash=True)
+
     field: InstrumentedAttribute[Any]
     _: dataclasses.KW_ONLY
     operator: OperatorType | OperatorProtocol
@@ -45,3 +29,11 @@ class FilterField:
 
     relationships: Sequence[RelationshipInfo] | None = None
     """For filter by nested relationship field"""
+
+    @property
+    def name(self) -> str:  # pragma: no cover
+        return self._name
+
+    @name.setter
+    def name(self, value: str) -> None:
+        self._name = value

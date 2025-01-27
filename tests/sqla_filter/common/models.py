@@ -23,6 +23,9 @@ class User(Base):
     __tablename__ = "user"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    first_name: Mapped[str | None]
+    last_name: Mapped[str]
+    is_deleted: Mapped[bool]
 
 
 class Review(Base):
@@ -38,6 +41,7 @@ class Author(Base):
     __tablename__ = "author"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    alias: Mapped[str | None]
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
     user: Mapped[User] = relationship()
 
