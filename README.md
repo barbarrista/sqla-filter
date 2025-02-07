@@ -156,7 +156,7 @@ class BookRepository:
 
 ### Ordering example
 
-```
+```py
 from typing import Annotated, Any
 
 from sqlalchemy import Select, select
