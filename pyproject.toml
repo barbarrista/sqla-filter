@@ -5,7 +5,7 @@ authors = [
 dependencies = [
   "sqlalchemy>=2.0.27",
 ]
-description = "Type safety filter for SQLAlchemy"
+description = "Type safety filtering and ordering for SQLAlchemy"
 license = {text = "MIT"}
 
 name = "sqla-filter"
