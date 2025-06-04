@@ -4,13 +4,15 @@ from typing import (
     Any,
     ClassVar,
     Literal,
+    Self,
     TypeVar,
+    cast,
     dataclass_transform,
     get_args,
     get_type_hints,
 )
 
-from sqlalchemy import Select, UnaryExpression
+from sqlalchemy import ColumnElement, Select, UnaryExpression, or_
 from sqlalchemy.orm import InstrumentedAttribute
 from sqlalchemy.sql.functions import coalesce
 
@@ -21,6 +23,48 @@ from .unset import Unset
 _SelectClause = TypeVar("_SelectClause", bound=tuple[Any, ...])
 
 
+def _get_sqla_filter_field(
+    annotations: tuple[Any, ...],
+) -> FilterField | OrderingField | None:
+    main, *other = annotations
+
+    for annotation in other:
+        if isinstance(annotation, FilterField):
+            return annotation
+
+        if isinstance(annotation, OrderingField):
+            if set(get_args(main)) != {OrderingEnum, Unset}:
+                msg = "Annotate ordering field as Annotated[OrderingEnum | Unset]"
+                raise TypeError(msg)
+
+            return annotation
+
+    return None
+
+
+def _init_subclass(cls: type[Any]) -> None:
+    wrapped_cls = dataclasses.dataclass(cls)
+    class_type_hints = get_type_hints(wrapped_cls, include_extras=True)
+    del class_type_hints["__sqla_filter_fields__"]
+
+    filter_fields = {}
+
+    for field_name, raw_type in class_type_hints.items():
+        args = get_args(raw_type)
+        if not args:  # pragma: no cover
+            continue
+
+        sqla_filter_field = _get_sqla_filter_field(args)
+        if sqla_filter_field is None:
+            continue
+
+        sqla_filter_field.name = field_name
+        filter_fields[field_name] = sqla_filter_field
+        setattr(wrapped_cls, field_name, sqla_filter_field)
+
+    wrapped_cls.__sqla_filter_fields__ = filter_fields
+
+
 @dataclass_transform(kw_only_default=True)
 class BaseFilter:
     __sqla_filter_fields__: ClassVar[Mapping[str, FilterField]]
@@ -29,6 +73,7 @@ class BaseFilter:
         _init_subclass(cls)
 
     def apply(self, stmt: Select[_SelectClause]) -> Select[_SelectClause]:
+        origin_stmt = stmt.where()
         for field_name, filter_ in self.__sqla_filter_fields__.items():
             value = getattr(self, field_name)
 
@@ -48,7 +93,32 @@ class BaseFilter:
                 ),  # pyright:ignore[reportArgumentType]
             )
 
-        return stmt
+        if stmt.whereclause is None:
+            return stmt
+
+        return self._process_or_filter(origin_stmt=origin_stmt, stmt=stmt)
+
+    def _process_or_filter(
+        self,
+        origin_stmt: Select[_SelectClause],
+        stmt: Select[_SelectClause],
+    ) -> Select[_SelectClause]:
+        or_filter: Self | None
+        if (or_filter := getattr(self, "or_", None)) is None:
+            return stmt
+
+        or_stmt = origin_stmt.where()
+        or_stmt = or_filter.apply(origin_stmt)
+
+        if or_stmt.whereclause is None:
+            return stmt
+
+        stmt_whereclause = cast("ColumnElement[Any]", stmt.whereclause)
+        return origin_stmt.where(or_(stmt_whereclause, or_stmt.whereclause))
+
+
+class SupportsOrFilter(BaseFilter):
+    or_: Self | None = None
 
 
 @dataclass_transform(kw_only_default=True)
@@ -98,48 +168,6 @@ class BaseSorter:
             stmt = stmt.order_by(expr)
 
         return stmt
-
-
-def _init_subclass(cls: type[Any]) -> None:
-    wrapped_cls = dataclasses.dataclass(cls)
-    class_type_hints = get_type_hints(wrapped_cls, include_extras=True)
-    del class_type_hints["__sqla_filter_fields__"]
-
-    filter_fields = {}
-
-    for field_name, raw_type in class_type_hints.items():
-        args = get_args(raw_type)
-        if not args:  # pragma: no cover
-            continue
-
-        sqla_filter_field = _get_sqla_filter_field(args)
-        if sqla_filter_field is None:
-            continue
-
-        sqla_filter_field.name = field_name
-        filter_fields[field_name] = sqla_filter_field
-        setattr(wrapped_cls, field_name, sqla_filter_field)
-
-    wrapped_cls.__sqla_filter_fields__ = filter_fields
-
-
-def _get_sqla_filter_field(
-    annotations: tuple[Any, ...],
-) -> FilterField | OrderingField | None:
-    main, *other = annotations
-
-    for annotation in other:
-        if isinstance(annotation, FilterField):
-            return annotation
-
-        if isinstance(annotation, OrderingField):
-            if set(get_args(main)) != {OrderingEnum, Unset}:
-                msg = "Annotate ordering field as Annotated[OrderingEnum | Unset]"
-                raise TypeError(msg)
-
-            return annotation
-
-    return None
 
 
 def _apply_join(

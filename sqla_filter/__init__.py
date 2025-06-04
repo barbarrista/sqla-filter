@@ -1,4 +1,4 @@
-from .base import BaseFilter, BaseSorter
+from .base import BaseFilter, BaseSorter, SupportsOrFilter
 from .filter_ import (
     FilterField,
     RelationshipInfo,
@@ -13,6 +13,7 @@ __all__ = [
     "RelationshipInfo",
     "FilterField",
     "BaseFilter",
+    "SupportsOrFilter",
     "BaseSorter",
     "OrderingField",
     "OrderingEnum",

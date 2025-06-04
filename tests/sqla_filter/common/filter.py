@@ -7,6 +7,7 @@ from uuid import UUID
 from sqlalchemy.sql.operators import eq, ge, icontains_op, in_op, le
 
 from sqla_filter import UNSET, BaseFilter, FilterField, RelationshipInfo, Unset
+from sqla_filter.base import SupportsOrFilter
 
 from .models import Author, Book, Review, User
 
@@ -73,3 +74,7 @@ class BookFilter(BaseFilter):
         ),
     ] = UNSET
     process_manually_field: str | Unset = UNSET
+
+
+class BookOrFilter(SupportsOrFilter):
+    ident: Annotated[UUID | Unset, FilterField(Book.id, operator=eq)] = UNSET

@@ -1,9 +1,9 @@
 import uuid
 from datetime import UTC, datetime, timedelta
 
-from sqlalchemy import select
+from sqlalchemy import or_, select
 
-from tests.sqla_filter.common.filter import BookFilter, DateTimeInterval
+from tests.sqla_filter.common.filter import BookFilter, BookOrFilter, DateTimeInterval
 from tests.sqla_filter.common.models import Author, Book, Review, User
 from tests.utils import compile_stmt
 
@@ -16,6 +16,89 @@ def test_build_simple_stmt() -> None:
     stmt = filter_.apply(stmt)
 
     expected_stmt = select(Book).where(Book.id == ident)
+
+    compiled_stmt = compile_stmt(stmt)
+    compiled_expected_stmt = compile_stmt(expected_stmt)
+
+    assert compiled_stmt.string == compiled_expected_stmt.string
+
+
+def test_build_empty_or_stmt() -> None:
+    ident = uuid.uuid4()
+
+    stmt = select(Book)
+    filter_ = BookOrFilter(ident=ident, or_=BookOrFilter())
+    stmt = filter_.apply(stmt)
+
+    expected_stmt = select(Book).where(Book.id == ident)
+
+    compiled_stmt = compile_stmt(stmt)
+    compiled_expected_stmt = compile_stmt(expected_stmt)
+
+    assert compiled_stmt.string == compiled_expected_stmt.string
+
+
+def test_build_empty_stmt() -> None:
+    stmt = select(Book)
+    filter_ = BookOrFilter()
+    stmt = filter_.apply(stmt)
+
+    expected_stmt = select(Book)
+
+    compiled_stmt = compile_stmt(stmt)
+    compiled_expected_stmt = compile_stmt(expected_stmt)
+
+    assert compiled_stmt.string == compiled_expected_stmt.string
+
+
+def test_build_simple_or_stmt() -> None:
+    ident_1 = uuid.uuid4()
+    ident_2 = uuid.uuid4()
+
+    stmt = select(Book)
+    filter_ = BookOrFilter(ident=ident_1, or_=BookOrFilter(ident=ident_2))
+    stmt = filter_.apply(stmt)
+
+    expected_stmt = select(Book).where(
+        or_(
+            Book.id == ident_1,
+            Book.id == ident_2,
+        ),
+    )
+
+    compiled_stmt = compile_stmt(stmt)
+    compiled_expected_stmt = compile_stmt(expected_stmt)
+
+    assert compiled_stmt.string == compiled_expected_stmt.string
+
+
+def test_build_nested_or_stmt() -> None:
+    ident_1 = uuid.uuid4()
+    ident_2 = uuid.uuid4()
+    ident_3 = uuid.uuid4()
+    ident_4 = uuid.uuid4()
+
+    stmt = select(Book)
+    filter_ = BookOrFilter(
+        ident=ident_1,
+        or_=BookOrFilter(
+            ident=ident_2,
+            or_=BookOrFilter(
+                ident=ident_3,
+                or_=BookOrFilter(ident=ident_4),
+            ),
+        ),
+    )
+    stmt = filter_.apply(stmt)
+
+    expected_stmt = select(Book).where(
+        or_(
+            Book.id == ident_1,
+            Book.id == ident_2,
+            Book.id == ident_3,
+            Book.id == ident_4,
+        ),
+    )
 
     compiled_stmt = compile_stmt(stmt)
     compiled_expected_stmt = compile_stmt(expected_stmt)

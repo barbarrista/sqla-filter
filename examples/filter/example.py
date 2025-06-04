@@ -13,6 +13,7 @@ from sqla_filter import (
     BaseFilter,
     FilterField,
     RelationshipInfo,
+    SupportsOrFilter,
     Unset,
 )
 
@@ -67,6 +68,23 @@ class BookFilter(BaseFilter):
             relationship=RelationshipInfo(field=Book.reviews),
         ),
     ] = UNSET
+
+
+class BookOrFilter(SupportsOrFilter):
+    ident: Annotated[UUID | Unset, FilterField(Book.id, operator=eq)] = UNSET
+
+
+def main_or() -> None:
+    stmt = select(Book)
+    print_stmt(stmt)
+
+    filter_ = BookOrFilter(
+        ident=uuid.uuid4(),
+        or_=BookOrFilter(ident=UUID("00000000-0000-0000-0000-000000000001")),
+    )
+
+    stmt = filter_.apply(stmt)
+    print_stmt(stmt)
 
 
 def main() -> None:
