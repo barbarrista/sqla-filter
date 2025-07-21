@@ -1,13 +1,14 @@
 import uuid
 from collections.abc import Sequence
 from datetime import UTC, datetime, timedelta
-from typing import Annotated, Any
+from typing import Annotated
 from uuid import UUID
 
-from sqlalchemy import Select, select
+from sqlalchemy import select
 from sqlalchemy.sql.operators import eq, ge, icontains_op, in_op, le
 
 from examples.models import Author, Book, Review, User
+from examples.utils import print_stmt
 from sqla_filter import (
     UNSET,
     BaseFilter,
@@ -102,20 +103,6 @@ def main() -> None:
 
     stmt = filter_.apply(stmt)
     print_stmt(stmt)
-
-
-def print_stmt(stmt: Select[tuple[Any, ...]]) -> None:
-    from sqlalchemy.dialects import postgresql
-
-    print(  # noqa: T201
-        stmt.compile(
-            dialect=postgresql.dialect(),  # type: ignore[no-untyped-call]
-            compile_kwargs={
-                "literal_binds": True,
-            },
-        ),
-        "\n",
-    )
 
 
 if __name__ == "__main__":

@@ -163,3 +163,21 @@ def test_build_stmt_with_multiple_join() -> None:
     compiled_expected_stmt = compile_stmt(expected_stmt)
 
     assert compiled_stmt.string == compiled_expected_stmt.string
+
+
+def test_build_manual_filter() -> None:
+    ident = uuid.uuid4()
+
+    stmt = select(Book)
+    filter_ = BookFilter(ident=ident, is_manual_filter_enabled=True)
+    stmt = filter_.apply(stmt)
+
+    expected_stmt = select(Book).where(
+        Book.id == ident,
+        Book.created_at != datetime.min,
+    )
+
+    compiled_stmt = compile_stmt(stmt)
+    compiled_expected_stmt = compile_stmt(expected_stmt)
+
+    assert compiled_stmt.string == compiled_expected_stmt.string

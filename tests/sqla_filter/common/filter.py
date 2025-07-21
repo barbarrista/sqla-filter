@@ -8,6 +8,7 @@ from sqlalchemy.sql.operators import eq, ge, icontains_op, in_op, le
 
 from sqla_filter import UNSET, BaseFilter, FilterField, RelationshipInfo, Unset
 from sqla_filter.base import SupportsOrFilter
+from tests.sqla_filter.common.manual_filter import BookManualFilter
 
 from .models import Author, Book, Review, User
 
@@ -74,6 +75,10 @@ class BookFilter(BaseFilter):
         ),
     ] = UNSET
     process_manually_field: str | Unset = UNSET
+    is_manual_filter_enabled: Annotated[
+        bool | Unset,
+        BookManualFilter(),
+    ] = UNSET
 
 
 class BookOrFilter(SupportsOrFilter):
