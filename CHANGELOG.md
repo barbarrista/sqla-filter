@@ -1,3 +1,9 @@
+## 0.5.1 (2025-07-21)
+
+### Fix
+
+- return generic to stmt, upgrade mypy
+
 ## 0.5.0 (2025-07-21)
 
 - support ManualFilter
