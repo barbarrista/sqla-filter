@@ -11,7 +11,7 @@ license = {text = "MIT"}
 name = "sqla-filter"
 readme = "README.md"
 requires-python = ">=3.11"
-version = "0.5.1"
+version = "0.5.2"
 
 [project.urls]
 "Examples" = "https://github.com/barbarrista/sqla-filter/tree/main/examples"
@@ -163,7 +163,7 @@ changelog_start_rev = "0.2.0"
 name = "cz_conventional_commits"
 tag_format = "$version"
 update_changelog_on_bump = true
-version = "0.5.1"
+version = "0.5.2"
 version_files = [
   "sqla_filter/__init__.py",
   "pyproject.toml:version",
