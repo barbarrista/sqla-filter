@@ -5,6 +5,7 @@ from typing import (
     ClassVar,
     Literal,
     Self,
+    TypeVar,
     cast,
     dataclass_transform,
     get_args,
@@ -19,10 +20,12 @@ from .filter_ import FilterField, ManualFilter, RelationshipInfo
 from .ordering import OrderingEnum, OrderingField
 from .unset import Unset
 
+T = TypeVar("T")
+
 
 def _get_sqla_filter_field(
     annotations: tuple[Any, ...],
-) -> FilterField | OrderingField | ManualFilter[Any] | None:
+) -> FilterField | OrderingField | ManualFilter[Any, Any] | None:
     main, *other = annotations
 
     for annotation in other:
@@ -67,15 +70,15 @@ def _init_subclass(cls: type[Any]) -> None:
 
 @dataclass_transform(kw_only_default=True)
 class BaseFilter:
-    __sqla_filter_fields__: ClassVar[Mapping[str, FilterField | ManualFilter[Any]]]
+    __sqla_filter_fields__: ClassVar[Mapping[str, FilterField | ManualFilter[Any, Any]]]
 
     def __init_subclass__(cls) -> None:
         _init_subclass(cls)
 
     def apply(  # noqa: C901
         self,
-        stmt: Select[tuple[Any, ...]],
-    ) -> Select[tuple[Any, ...]]:
+        stmt: Select[tuple[T]],
+    ) -> Select[tuple[T]]:
         origin_stmt = stmt.where()
         for field_name, filter_ in self.__sqla_filter_fields__.items():
             value = getattr(self, field_name)
@@ -107,9 +110,9 @@ class BaseFilter:
 
     def _process_or_filter(
         self,
-        origin_stmt: Select[tuple[Any, ...]],
-        stmt: Select[tuple[Any, ...]],
-    ) -> Select[tuple[Any, ...]]:
+        origin_stmt: Select[tuple[T]],
+        stmt: Select[tuple[T]],
+    ) -> Select[tuple[T]]:
         or_filter: Self | None
         if (or_filter := getattr(self, "or_", None)) is None:
             return stmt
@@ -137,9 +140,9 @@ class BaseSorter:
 
     def apply(
         self,
-        stmt: Select[tuple[Any, ...]],
+        stmt: Select[tuple[T]],
         fields_priority: Iterable[OrderingField] | None = None,
-    ) -> Select[tuple[Any, ...]]:
+    ) -> Select[tuple[T]]:
         all_fields = self.__sqla_filter_fields__
         if fields_priority:
             sorted_fields = {
@@ -178,10 +181,10 @@ class BaseSorter:
 
 
 def _apply_join(
-    stmt: Select[tuple[Any, ...]],
+    stmt: Select[tuple[T]],
     *,
     relationship: RelationshipInfo,
-) -> Select[tuple[Any, ...]]:
+) -> Select[tuple[T]]:
     return stmt.join(
         relationship.field,
         relationship.onclause,

@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 @final
-class HasUrgentJobFilter(ManualFilter["ContractFilter"]):
+class HasUrgentJobFilter(ManualFilter[Contract, "ContractFilter"]):
     def apply(
         self,
         stmt: Select[tuple[Contract]],

@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 @final
-class BookManualFilter(ManualFilter["BookFilter"]):
+class BookManualFilter(ManualFilter[Book, "BookFilter"]):
     def apply(
         self,
         stmt: Select[tuple[Book]],

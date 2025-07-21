@@ -19,6 +19,7 @@ if TYPE_CHECKING:
     from .base import BaseFilter
 
 _TFilter = TypeVar("_TFilter", bound="BaseFilter")
+_T = TypeVar("_T")
 
 
 class OperatorProtocol(Protocol):  # pragma: no cover
@@ -29,17 +30,17 @@ class OperatorProtocol(Protocol):  # pragma: no cover
     ) -> ColumnElement[bool]: ...
 
 
-class ManualFilter(ABC, Generic[_TFilter]):
+class ManualFilter(ABC, Generic[_T, _TFilter]):
     _name: str
 
     @abstractmethod
     def apply(
         self,
-        stmt: Select[tuple[Any, ...]],
+        stmt: Select[tuple[_T]],
         *,
         value: Any,  # noqa: ANN401
         filter_: _TFilter,
-    ) -> Select[tuple[Any, ...]]:
+    ) -> Select[tuple[_T]]:
         raise NotImplementedError
 
     @property
