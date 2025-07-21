@@ -14,12 +14,12 @@ from sqlalchemy.orm import InstrumentedAttribute
 from sqlalchemy.sql.operators import OperatorType
 
 from .relationship import RelationshipInfo
+from .types_ import SelectClause
 
 if TYPE_CHECKING:
     from .base import BaseFilter
 
 _TFilter = TypeVar("_TFilter", bound="BaseFilter")
-_T = TypeVar("_T")
 
 
 class OperatorProtocol(Protocol):  # pragma: no cover
@@ -30,17 +30,17 @@ class OperatorProtocol(Protocol):  # pragma: no cover
     ) -> ColumnElement[bool]: ...
 
 
-class ManualFilter(ABC, Generic[_T, _TFilter]):
+class ManualFilter(ABC, Generic[SelectClause, _TFilter]):
     _name: str
 
     @abstractmethod
     def apply(
         self,
-        stmt: Select[tuple[_T]],
+        stmt: Select[SelectClause],
         *,
         value: Any,  # noqa: ANN401
         filter_: _TFilter,
-    ) -> Select[tuple[_T]]:
+    ) -> Select[SelectClause]:
         raise NotImplementedError
 
     @property
