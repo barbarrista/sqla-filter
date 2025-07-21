@@ -196,7 +196,7 @@ if TYPE_CHECKING:
 
 
 @final
-class HasUrgentJobFilter(ManualFilter[Contract, "ContractFilter"]):
+class HasUrgentJobFilter(ManualFilter[tuple[Contract], "ContractFilter"]):
     def apply(
         self,
         stmt: Select[tuple[Contract]],
