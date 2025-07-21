@@ -16,3 +16,11 @@ def or_unset(value: _T | None) -> _T | Unset:
         return UNSET
 
     return value
+
+
+def define(value: _T | Unset) -> _T:
+    if isinstance(value, Unset):
+        msg = 'Got "Unset" type'
+        raise TypeError(msg)
+
+    return value

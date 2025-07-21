@@ -62,3 +62,30 @@ class Book(Base):
     authors: Mapped[list[Author]] = relationship(secondary=BookAuthor.__table__)
     reviews: Mapped[list[Review]] = relationship()
     created_at: Mapped[datetime]
+
+
+class Contract(Base):
+    __tablename__ = "contract"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    created_at: Mapped[datetime]
+
+
+class Job(Base):
+    __tablename__ = "job"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    is_urgent: Mapped[bool]
+
+
+class ContractJob(Base):
+    __tablename__ = "contract_job"
+
+    job_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("job.id"),
+        primary_key=True,
+    )
+    contract_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("contract.id"),
+        primary_key=True,
+    )

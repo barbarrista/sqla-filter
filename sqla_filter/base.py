@@ -5,7 +5,6 @@ from typing import (
     ClassVar,
     Literal,
     Self,
-    TypeVar,
     cast,
     dataclass_transform,
     get_args,
@@ -16,16 +15,14 @@ from sqlalchemy import ColumnElement, Select, UnaryExpression, or_
 from sqlalchemy.orm import InstrumentedAttribute
 from sqlalchemy.sql.functions import coalesce
 
-from .filter_ import FilterField, RelationshipInfo
+from .filter_ import FilterField, ManualFilter, RelationshipInfo
 from .ordering import OrderingEnum, OrderingField
 from .unset import Unset
-
-_SelectClause = TypeVar("_SelectClause", bound=tuple[Any, ...])
 
 
 def _get_sqla_filter_field(
     annotations: tuple[Any, ...],
-) -> FilterField | OrderingField | None:
+) -> FilterField | OrderingField | ManualFilter[Any] | None:
     main, *other = annotations
 
     for annotation in other:
@@ -37,6 +34,9 @@ def _get_sqla_filter_field(
                 msg = "Annotate ordering field as Annotated[OrderingEnum | Unset]"
                 raise TypeError(msg)
 
+            return annotation
+
+        if isinstance(annotation, ManualFilter):
             return annotation
 
     return None
@@ -67,17 +67,24 @@ def _init_subclass(cls: type[Any]) -> None:
 
 @dataclass_transform(kw_only_default=True)
 class BaseFilter:
-    __sqla_filter_fields__: ClassVar[Mapping[str, FilterField]]
+    __sqla_filter_fields__: ClassVar[Mapping[str, FilterField | ManualFilter[Any]]]
 
     def __init_subclass__(cls) -> None:
         _init_subclass(cls)
 
-    def apply(self, stmt: Select[_SelectClause]) -> Select[_SelectClause]:
+    def apply(  # noqa: C901
+        self,
+        stmt: Select[tuple[Any, ...]],
+    ) -> Select[tuple[Any, ...]]:
         origin_stmt = stmt.where()
         for field_name, filter_ in self.__sqla_filter_fields__.items():
             value = getattr(self, field_name)
 
             if value is Unset.v:
+                continue
+
+            if isinstance(filter_, ManualFilter):
+                stmt = filter_.apply(stmt, value=value, filter_=self)
                 continue
 
             if filter_.relationship:
@@ -100,9 +107,9 @@ class BaseFilter:
 
     def _process_or_filter(
         self,
-        origin_stmt: Select[_SelectClause],
-        stmt: Select[_SelectClause],
-    ) -> Select[_SelectClause]:
+        origin_stmt: Select[tuple[Any, ...]],
+        stmt: Select[tuple[Any, ...]],
+    ) -> Select[tuple[Any, ...]]:
         or_filter: Self | None
         if (or_filter := getattr(self, "or_", None)) is None:
             return stmt
@@ -130,9 +137,9 @@ class BaseSorter:
 
     def apply(
         self,
-        stmt: Select[_SelectClause],
+        stmt: Select[tuple[Any, ...]],
         fields_priority: Iterable[OrderingField] | None = None,
-    ) -> Select[_SelectClause]:
+    ) -> Select[tuple[Any, ...]]:
         all_fields = self.__sqla_filter_fields__
         if fields_priority:
             sorted_fields = {
@@ -171,10 +178,10 @@ class BaseSorter:
 
 
 def _apply_join(
-    stmt: Select[_SelectClause],
+    stmt: Select[tuple[Any, ...]],
     *,
     relationship: RelationshipInfo,
-) -> Select[_SelectClause]:
+) -> Select[tuple[Any, ...]]:
     return stmt.join(
         relationship.field,
         relationship.onclause,
