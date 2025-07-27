@@ -1,6 +1,7 @@
 site_name: Type safety filtering and ordering for SQLAlchemy
 site_description: Package for convenient filtering and ordering functionality in SQLAlchemy.
 repo_url: https://github.com/barbarrista/sqla-filter
+site_url: https://barbarrista.github.io/sqla-filter/
 nav:
   - Home: index.md
   - Installation: installation.md
