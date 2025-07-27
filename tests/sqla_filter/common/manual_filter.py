@@ -22,4 +22,4 @@ class BookManualFilter(ManualFilter[tuple[Book], "BookFilter"]):
         if not value:
             return stmt
 
-        return stmt.where(Book.created_at != datetime.min)
+        return stmt.where(Book.created_at != datetime.min)  # noqa: DTZ901

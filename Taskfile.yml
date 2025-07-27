@@ -1,0 +1,67 @@
+version: "3"
+
+vars:
+  RUNNER:
+    sh: 'echo {{ .RUNNER | default "" }}'
+  SOURCES: sqla_filter tests
+  SOURCES_ROOT: sqla_filter
+
+tasks:
+  default:
+    cmd:
+      task: all
+
+  ruff-lint:
+    desc: Run ruff check
+    cmds:
+      - "{{.RUNNER}} ruff check --fix {{.SOURCES}}"
+
+  format:
+    desc: Run ruff format
+    cmds:
+      - "{{.RUNNER}} ruff format {{.SOURCES}}"
+
+  typecheck:
+    desc: Perform type-checking
+    silent: true
+    cmd: "{{.RUNNER}} mypy {{.SOURCES}}"
+
+  test:
+    desc: Run tests
+    cmd: "{{.RUNNER}} coverage run"
+
+  _testcov:
+    silent: true
+    desc: Run tests and generate a coverage report
+    cmds:
+      - task: test
+      - "{{.RUNNER}} coverage combine"
+      - "{{.RUNNER}} coverage report -m"
+      - "{{.RUNNER}} coverage xml"
+
+  covclear:
+    desc: Remove coverage report files
+    cmds:
+      - "{{.RUNNER}} coverage erase"
+
+  testcov:
+    desc: Run tests and generate a coverage report and clear files
+    cmds:
+      - defer: { task: covclear }
+      - task: _testcov
+  lint:
+    desc: Run all linters and format files
+    cmds:
+      - task: ruff-lint
+      - task: format
+      - task: typecheck
+
+  all:
+    desc: Run the standard set of checks performed in CI
+    cmds:
+      - task: lint
+      - task: testcov
+
+  docs:
+    desc: Run docs server
+    cmd: "mkdocs serve"

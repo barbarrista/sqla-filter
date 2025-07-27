@@ -42,4 +42,4 @@ def build_priorities(*fields: Any) -> Iterable[OrderingField]:  # noqa: ANN401
 
     Pass only `OrderingField`
     """
-    return cast(Iterable[OrderingField], fields)
+    return cast("Iterable[OrderingField]", fields)

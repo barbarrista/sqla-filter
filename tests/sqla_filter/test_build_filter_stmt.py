@@ -174,7 +174,7 @@ def test_build_manual_filter() -> None:
 
     expected_stmt = select(Book).where(
         Book.id == ident,
-        Book.created_at != datetime.min,
+        Book.created_at != datetime.min,  # noqa: DTZ901
     )
 
     compiled_stmt = compile_stmt(stmt)
