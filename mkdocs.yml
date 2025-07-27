@@ -6,13 +6,13 @@ nav:
   - Installation: installation.md
   - Philosophy: philosophy.md
   - Cookbook:
-      Filtering: 
-        Simple Usage: filtering/simple_usage.md
-        Relationships: filtering/relationships.md
-        Manual Filter: filtering/manual_filter.md
-        Or Filter: filtering/or_filter.md
-    
-      Ordering: ordering.md
+      - Filtering:
+          - Simple Usage: filtering/simple_usage.md
+          - Relationships: filtering/relationships.md
+          - Manual Filter: filtering/manual_filter.md
+          - Or Filter: filtering/or_filter.md
+
+      - Ordering: ordering.md
   - Changelog: changelog.md
 
 markdown_extensions:
@@ -50,7 +50,7 @@ theme:
 plugins:
   - search
   - termynal:
-        prompt_literal_start:
+      prompt_literal_start:
         - "$"
         - ">"
 
