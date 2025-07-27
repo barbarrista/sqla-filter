@@ -1,0 +1,60 @@
+site_name: Type safety filtering and ordering for SQLAlchemy
+site_description: Package for convenient filtering and ordering functionality in SQLAlchemy.
+repo_url: https://github.com/barbarrista/sqla-filter
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Philosophy: philosophy.md
+  - Cookbook:
+      Filtering: 
+        Simple Usage: filtering/simple_usage.md
+        Relationships: filtering/relationships.md
+        Manual Filter: filtering/manual_filter.md
+        Or Filter: filtering/or_filter.md
+    
+      Ordering: ordering.md
+  - Changelog: changelog.md
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+
+  - toc:
+      permalink: true
+
+  - tables
+  - fenced_code
+
+theme:
+  name: material
+  features:
+    - content.code.annotate
+    - content.code.copy
+    - content.code.select
+    - navigation.expand
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: "indigo"
+      accent: "indigo"
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: "indigo"
+      accent: "indigo"
+plugins:
+  - search
+  - termynal:
+        prompt_literal_start:
+        - "$"
+        - ">"
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/barbarrista/sqla-filter
