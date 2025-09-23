@@ -74,7 +74,7 @@ class BookRepository:
 
 ```
 
-Not everyone is happy with such code in repository methods. Therefore, there was an attempt to reduce the code in repositories. Of course, not without victims. Now there is more code in filter classes.
+Not everyone is happy with this kind of code in repository methods. Therefore, an attempt was made to reduce its volume. Of course, there were sacrifices. Now there is more code in the filter classes.
 
 ```python
 from sqlalchemy.sql.operators import eq, ge, icontains_op, in_op, le
