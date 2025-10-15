@@ -1,4 +1,11 @@
+
 # SQLAlchemy Filter
+
+<!-- -8<- [start:Header] -->
+[![Docs](https://img.shields.io/badge/docs-mkdocs-green)](https://barbarrista.github.io/sqla-filter)
+[![pypi version](https://img.shields.io/pypi/v/sqla-filter.svg)](https://pypi.org/project/sqla-filter/)
+[![PyPI - Downloads](https://img.shields.io/pypi/dw/sqla-filter)](https://pypacktrends.com/?packages=sqla-filter&time_range=2years)
+<!-- -8<- [end:Header] -->
 
 ## Package for convenient filtering and ordering functionality in SQLAlchemy
 
