@@ -1,3 +1,9 @@
+## 0.6.0rc1 (2026-10-26)
+
+### Feat
+
+- feat: support Update/Delete in BaseFilter via SupportsWhere. Relationship filters on Update/Delete raise TypeError; documented
+
 ## 0.6.0rc0 (2026-10-26)
 
 ### BREAKING CHANGE
