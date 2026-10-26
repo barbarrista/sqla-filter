@@ -1,3 +1,13 @@
+## 0.6.0rc0 (2026-10-26)
+
+### BREAKING CHANGE
+
+- ManualFilter first type arg is now Select[...]
+
+### Refactor
+
+- update filter and utility types to use SelectClause for improved type safety
+
 ## 0.5.7 (2025-10-15)
 
 ## 0.5.6 (2025-09-23)
