@@ -1,11 +1,11 @@
 from typing import Annotated, assert_never
 
 import pytest
-from sqlalchemy import select
-
 from sqla_filter.base import BaseSorter
 from sqla_filter.ordering import OrderingEnum, OrderingField, build_priorities
 from sqla_filter.unset import UNSET, Unset
+from sqlalchemy import select
+
 from tests.sqla_filter.common.models import Author, Book, User
 from tests.sqla_filter.common.ordering import BookSorter
 from tests.utils import compile_stmt

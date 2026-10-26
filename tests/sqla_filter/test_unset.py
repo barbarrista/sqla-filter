@@ -1,5 +1,4 @@
 import pytest
-
 from sqla_filter.unset import UNSET, Unset, define, or_unset
 
 

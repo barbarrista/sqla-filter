@@ -1,9 +1,9 @@
 from datetime import datetime
 from typing import TYPE_CHECKING, final
 
+from sqla_filter.filter_ import ManualFilter
 from sqlalchemy import Select
 
-from sqla_filter.filter_ import ManualFilter
 from tests.sqla_filter.common.models import Book
 
 if TYPE_CHECKING:

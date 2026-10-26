@@ -137,6 +137,7 @@ lint.ignore = [
   "RUF001",
   "RUF002",
   "RUF003",
+  "CPY",
 ]
 lint.select = ["ALL"]
 src = ["sqla_filter", "tests"]
