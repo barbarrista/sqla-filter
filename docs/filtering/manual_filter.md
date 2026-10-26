@@ -2,6 +2,12 @@
 
 Sometimes you need some filtering. For this there is `sqla_filter.filter_.ManualFilter`.
 
+!!! note
+    The first type argument of `ManualFilter` is a `Select[...]`, not a row tuple.
+
+    - SQLAlchemy 2.1+: `ManualFilter[Select[Model], Filter]`
+    - SQLAlchemy 2.0: `ManualFilter[Select[tuple[Model]], Filter]`
+
 ```python
 # manual_filter.py
 
