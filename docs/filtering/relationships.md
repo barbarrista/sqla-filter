@@ -40,6 +40,11 @@ class Book(Base):
 
 Don't worry if you specify more than one of the same relationship field. If you use join via relationship, the join will only happen once.
 
+!!! warning
+    Relationship filters call `.join()` on the statement. That works with `Select`.
+    Passing an `Update` or `Delete` into `apply()` when a relationship field is set
+    raises `TypeError`.
+
 ```python
 class BookFilter(BaseFilter):
     author_last_name_contains: Annotated[

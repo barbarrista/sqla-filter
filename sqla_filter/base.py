@@ -18,7 +18,7 @@ from sqlalchemy.sql.functions import coalesce
 
 from .filter_ import FilterField, ManualFilter, RelationshipInfo
 from .ordering import OrderingEnum, OrderingField
-from .types_ import SelectClause
+from .types_ import SelectClause, SelectStatement
 from .unset import Unset
 
 T = TypeVar("T")
@@ -141,9 +141,9 @@ class BaseSorter:
 
     def apply(
         self,
-        stmt: SelectClause,
+        stmt: SelectStatement,
         fields_priority: Iterable[OrderingField] | None = None,
-    ) -> SelectClause:
+    ) -> SelectStatement:
         all_fields = self.__sqla_filter_fields__
         if fields_priority:
             sorted_fields = {
@@ -186,7 +186,15 @@ def _apply_join(
     *,
     relationship: RelationshipInfo,
 ) -> SelectClause:
-    return stmt.join(
+    join = getattr(stmt, "join", None)
+    if join is None:
+        msg = (
+            "Relationship filters require a Select statement; "
+            "Update/Delete do not support .join()"
+        )
+        raise TypeError(msg)
+
+    return join(  # type: ignore[no-any-return]
         relationship.field,
         relationship.onclause,
         isouter=relationship.isouter,

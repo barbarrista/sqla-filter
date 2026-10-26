@@ -1,7 +1,10 @@
 import uuid
+from collections.abc import Callable
 from datetime import UTC, datetime, timedelta
+from typing import Any
 
-from sqlalchemy import or_, select
+import pytest
+from sqlalchemy import Delete, Update, delete, or_, select, update
 
 from tests.sqla_filter.common.filter import BookFilter, BookOrFilter, DateTimeInterval
 from tests.sqla_filter.common.models import Author, Book, Review, User
@@ -181,3 +184,44 @@ def test_build_manual_filter() -> None:
     compiled_expected_stmt = compile_stmt(expected_stmt)
 
     assert compiled_stmt.string == compiled_expected_stmt.string
+
+
+def test_build_update_stmt() -> None:
+    ident = uuid.uuid4()
+
+    stmt = update(Book)
+    filter_ = BookFilter(ident=ident)
+    stmt = filter_.apply(stmt)
+
+    expected_stmt = update(Book).where(Book.id == ident)
+
+    compiled_stmt = compile_stmt(stmt)
+    compiled_expected_stmt = compile_stmt(expected_stmt)
+
+    assert compiled_stmt.string == compiled_expected_stmt.string
+
+
+def test_build_delete_stmt() -> None:
+    ident = uuid.uuid4()
+
+    stmt = delete(Book)
+    filter_ = BookFilter(ident=ident)
+    stmt = filter_.apply(stmt)
+
+    expected_stmt = delete(Book).where(Book.id == ident)
+
+    compiled_stmt = compile_stmt(stmt)
+    compiled_expected_stmt = compile_stmt(expected_stmt)
+
+    assert compiled_stmt.string == compiled_expected_stmt.string
+
+
+@pytest.mark.parametrize("stmt_type", [update, delete])
+def test_stmt_with_relationship_raises(
+    stmt_type: Callable[[type[Any]], Update] | Callable[[type[Any]], Delete],
+) -> None:
+    stmt = stmt_type(Book)
+    filter_ = BookFilter(review_ids=[uuid.uuid4()])
+
+    with pytest.raises(TypeError, match="Relationship filters require a Select"):
+        filter_.apply(stmt)

@@ -3,10 +3,16 @@
 Sometimes you need some filtering. For this there is `sqla_filter.filter_.ManualFilter`.
 
 !!! note
-    The first type argument of `ManualFilter` is a `Select[...]`, not a row tuple.
+    The first type argument of `ManualFilter` is the statement type (`Select` / `Update` / `Delete`), not a row tuple.
 
-    - SQLAlchemy 2.1+: `ManualFilter[Select[Model], Filter]`
-    - SQLAlchemy 2.0: `ManualFilter[Select[tuple[Model]], Filter]`
+    - SQLAlchemy 2.1+ select: `ManualFilter[Select[Model], Filter]`
+    - SQLAlchemy 2.0 select: `ManualFilter[Select[tuple[Model]], Filter]`
+    - Update / Delete: `ManualFilter[Update, Filter]` / `ManualFilter[Delete, Filter]`
+
+    `BaseFilter` works with `Update` and `Delete` for plain `WHERE` filters.
+    If the filter uses a relationship (`relationship` / `relationships`) with an
+    `Update` or `Delete` statement, `apply()` raises `TypeError` — joins are
+    supported only on `Select`. `BaseSorter` also requires `Select`.
 
 ```python
 # manual_filter.py
