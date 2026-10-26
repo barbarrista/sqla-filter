@@ -1,8 +1,9 @@
-from typing import Annotated, Any
+from typing import Annotated
 
-from sqlalchemy import Select, select
+from sqlalchemy import select
 
 from examples.models import Author, Book, User
+from examples.utils import print_stmt
 from sqla_filter import (
     UNSET,
     BaseSorter,
@@ -66,20 +67,6 @@ def main() -> None:
         ),
     )
     print_stmt(stmt)
-
-
-def print_stmt(stmt: Select[tuple[Any, ...]]) -> None:
-    from sqlalchemy.dialects import postgresql
-
-    print(  # noqa: T201
-        stmt.compile(
-            dialect=postgresql.dialect(),  # type: ignore[no-untyped-call]
-            compile_kwargs={
-                "literal_binds": True,
-            },
-        ),
-        "\n",
-    )
 
 
 if __name__ == "__main__":

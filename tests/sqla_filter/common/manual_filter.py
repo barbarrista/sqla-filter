@@ -11,14 +11,14 @@ if TYPE_CHECKING:
 
 
 @final
-class BookManualFilter(ManualFilter[tuple[Book], "BookFilter"]):
+class BookManualFilter(ManualFilter[Select[Book], "BookFilter"]):
     def apply(
         self,
-        stmt: Select[tuple[Book]],
+        stmt: Select[Book],
         *,
         value: bool,
         filter_: "BookFilter",  # noqa: ARG002
-    ) -> Select[tuple[Book]]:
+    ) -> Select[Book]:
         if not value:
             return stmt
 

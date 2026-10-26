@@ -12,7 +12,7 @@ from typing import (
     get_type_hints,
 )
 
-from sqlalchemy import ColumnElement, Select, UnaryExpression, or_
+from sqlalchemy import ColumnElement, UnaryExpression, or_
 from sqlalchemy.orm import InstrumentedAttribute
 from sqlalchemy.sql.functions import coalesce
 
@@ -78,8 +78,8 @@ class BaseFilter:
 
     def apply(  # noqa: C901
         self,
-        stmt: Select[SelectClause],
-    ) -> Select[SelectClause]:
+        stmt: SelectClause,
+    ) -> SelectClause:
         origin_stmt = stmt.where()
         for field_name, filter_ in self.__sqla_filter_fields__.items():
             value = getattr(self, field_name)
@@ -111,9 +111,9 @@ class BaseFilter:
 
     def _process_or_filter(
         self,
-        origin_stmt: Select[SelectClause],
-        stmt: Select[SelectClause],
-    ) -> Select[SelectClause]:
+        origin_stmt: SelectClause,
+        stmt: SelectClause,
+    ) -> SelectClause:
         or_filter: Self | None
         if (or_filter := getattr(self, "or_", None)) is None:
             return stmt
@@ -141,9 +141,9 @@ class BaseSorter:
 
     def apply(
         self,
-        stmt: Select[SelectClause],
+        stmt: SelectClause,
         fields_priority: Iterable[OrderingField] | None = None,
-    ) -> Select[SelectClause]:
+    ) -> SelectClause:
         all_fields = self.__sqla_filter_fields__
         if fields_priority:
             sorted_fields = {
@@ -182,10 +182,10 @@ class BaseSorter:
 
 
 def _apply_join(
-    stmt: Select[SelectClause],
+    stmt: SelectClause,
     *,
     relationship: RelationshipInfo,
-) -> Select[SelectClause]:
+) -> SelectClause:
     return stmt.join(
         relationship.field,
         relationship.onclause,

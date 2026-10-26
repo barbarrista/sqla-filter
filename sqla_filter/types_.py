@@ -1,3 +1,5 @@
 from typing import Any, TypeVar
 
-SelectClause = TypeVar("SelectClause", bound=tuple[Any, ...])
+from sqlalchemy import Select
+
+SelectClause = TypeVar("SelectClause", bound=Select[Any])

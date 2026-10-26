@@ -9,7 +9,7 @@ from typing import (
     TypeVar,
 )
 
-from sqlalchemy import ColumnElement, Select
+from sqlalchemy import ColumnElement
 from sqlalchemy.orm import InstrumentedAttribute
 from sqlalchemy.sql.operators import OperatorType
 
@@ -36,11 +36,11 @@ class ManualFilter(ABC, Generic[SelectClause, _TFilter]):
     @abstractmethod
     def apply(
         self,
-        stmt: Select[SelectClause],
+        stmt: SelectClause,
         *,
         value: Any,  # noqa: ANN401
         filter_: _TFilter,
-    ) -> Select[SelectClause]:
+    ) -> SelectClause:
         raise NotImplementedError
 
     @property

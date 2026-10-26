@@ -1,9 +1,7 @@
-from typing import Any
-
-from sqlalchemy import Select
+from sqla_filter.types_ import SelectClause
 
 
-def print_stmt(stmt: Select[tuple[Any, ...]]) -> None:
+def print_stmt(stmt: SelectClause) -> None:
     from sqlalchemy.dialects import postgresql
 
     print(  # noqa: T201

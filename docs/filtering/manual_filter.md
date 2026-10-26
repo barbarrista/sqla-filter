@@ -18,14 +18,14 @@ if TYPE_CHECKING:
 
 
 @final
-class HasUrgentJobFilter(ManualFilter[tuple[Contract], "ContractFilter"]):
+class HasUrgentJobFilter(ManualFilter[Select[Contract], "ContractFilter"]):
     def apply(
         self,
-        stmt: Select[tuple[Contract]],
+        stmt: Select[Contract],
         *,
         value: bool,
         filter_: "ContractFilter",
-    ) -> Select[tuple[Contract]]:
+    ) -> Select[Contract]:
         urgent_specs_exists = exists(
             select(1)
             .select_from(ContractJob)

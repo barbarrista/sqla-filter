@@ -1,13 +1,9 @@
-from typing import TypeVar
-
-from sqlalchemy import Select
+from sqla_filter.types_ import SelectClause
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.sql.compiler import SQLCompiler
 
-_T = TypeVar("_T")
 
-
-def compile_stmt(stmt: Select[tuple[_T]]) -> SQLCompiler:
+def compile_stmt(stmt: SelectClause) -> SQLCompiler:
     return stmt.compile(
         dialect=postgresql.dialect(),  # type:ignore[no-untyped-call]
         compile_kwargs={"literal_binds": True},

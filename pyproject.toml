@@ -26,6 +26,9 @@ requires = ["hatchling"]
 ignore-vcs = true
 include = ["sqla_filter/*", "tests/*", "docs/*"]
 
+[tool.uv]
+default-groups = ["dev", "lint", "tests", "docs"]
+
 [dependency-groups]
 dev = [
   "commitizen>=3.18.0",
